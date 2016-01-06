@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Blog - Jacob P Rajan</title>
+    <meta name="description" content="Content about Java">
+
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" href="/styles/style.css">
+    
+    <meta property="og:site_name" content="Jacob P Rajan" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Blog" />
+    <meta property="og:description" content="Content related to Java." />
+  
+</head>
+
+
+  <body>
+
+    <!-- Facebook SDK -->
+
+    <!-- Actual content -->
+    <div class="biggie">
+      <div class="site-header">
+
+  <a class="site-title" href="/">Jacob P Rajan</a>
+
+  <label class="menu-icon" for="hamburger">
+    <div></div>
+    <div></div>
+    <div></div>
+  </label>
+
+  <input type="checkbox" class="menu-toggle" id="hamburger">
+
+  <div class="site-menu">
+    <a class="page-link" href="/">Home</a>
+    <a class="page-link" href="/about/">About</a>
+    <a class="page-link" href="/">Reading Lists</a>
+  </div>
+
+</div>
+
+      <div class="page-content">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Difference between StringBuilder and StringBuffer in Java</h1>
+
+  </header>
+
+  <article class="post-content">
+    <p>Though both of these classes are mutable version of String class, there is one significant difference between them, which makes this question interesting and favourite among Java interviewers. More often than not, I see this question coming up in telephonic round of Java interviews, or even couple of rounds of preliminary face to face interview.
+</br>
+1) StringBuffer is Synchronized and StringBuilder is Not </br>
+Yes, this is the common answer from majority of Java developers to this question, which is true, but when asked to elaborate this answer, most of them fail miserably. In order to elaborate, you must know what is meant by synchronized and what changes StringBuilder make to achieve that. In this case its pretty straightforward. If you open code of StringBuffer.java and StringBuilder.java , you can do this in Eclipse IDE by pressing Ctrl + T and typing StringBuffer for former and StringBuilder for later. This is one of the several useful Eclipse short-cuts discussed in that article.  Almost all the methods of StringBuffer e.g. length(), capacity(), ensureCapacity() , setLength(), charAt() and all overloaded version of append() methods are synchronized, as shown below :
+
+</p>
+      
+<div style="background: #ffffff; overflow:auto;width:auto;border:solid white;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #007700">public</span> <span style="color: #007700">StringBuffer</span><span style="color: #333333">(</span><span style="color: #007700">CharSequence</span> <span style="color: #007700">seq</span><span style="color: #333333">)</span> {
+        this(seq<span style="color: #333333">.</span>length() <span style="color: #333333">+</span> <span style="color: #333333; font-weight: bold">16</span>);
+        append(seq);
+    }
+
+    <span style="color: #007700">public</span> <span style="color: #007700">synchronized</span> <span style="color: #007700">int</span> <span style="color: #007700">length</span><span style="color: #333333">()</span> {
+        return count;
+    }
+
+    <span style="color: #007700">public</span> <span style="color: #007700">synchronized</span> <span style="color: #007700">int</span> <span style="color: #007700">capacity</span><span style="color: #333333">()</span> {
+        return value<span style="color: #333333">.</span>length;
+    }
+
+
+    <span style="color: #007700">public</span> <span style="color: #007700">synchronized</span> <span style="color: #007700">void</span> <span style="color: #007700">ensureCapacity</span><span style="color: #333333">(</span><span style="color: #007700">int</span> <span style="color: #007700">minimumCapacity</span><span style="color: #333333">)</span> {
+        if (minimumCapacity <span style="color: #333333">&gt;</span> value<span style="color: #333333">.</span>length) <span style="color: #333333; ">{</span>
+            expandCapacity(minimumCapacity);
+        }
+    <span style="color: #333333; ">}</span>
+
+    <span style="color: #888888">/**</span>
+<span style="color: #888888">     * @since      1.5</span>
+<span style="color: #888888">     */</span>
+    <span style="color: #007700">public</span> <span style="color: #007700">synchronized</span> <span style="color: #007700">void</span> <span style="color: #007700">trimToSize</span><span style="color: #333333">()</span> {
+        <span style="color: #008800; font-weight: bold">super</span><span style="color: #333333">.</span>trimToSize(); 
+    }
+</pre></div>
+
+</br>
+<p>This is done to protect instance variable like count, value (character array which holds content of StringBuffer) being corrupted by exposing to multiple threads. In fact, every method which touches these variables are made synchronized, which is of-course absolutely needed if you want to make StringBuffer thread-safe, but as side effect this makes StringBuffer instances slower. On the other hand if you look at StringBuider class, you will not find any single synchronized method.  If you don't believe me do a search for synchronized word in StringBuilder.java file. All corresponding methods in this class are non-synchronized.
+</p>
+            
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid white;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #007700">public</span> <span style="color: #007700">StringBuilder</span> <span style="color: #007700">append</span><span style="color: #333333">(</span><span style="color: #007700">char</span><span style="color: #333333">[]</span> <span style="color: #007700">str</span><span style="color: #333333">,</span> <span style="color: #007700">int</span> <span style="color: #007700">offset</span><span style="color: #333333">,</span> <span style="color: #007700">int</span> <span style="color: #007700">len</span><span style="color: #333333">)</span>
+	{
+		<span style="color: #008800; font-weight: bold">super</span><span style="color: #333333">.</span>append(str<span style="color: #333333">,</span> offset<span style="color: #333333">,</span> len);
+		return this;
+	}
+
+	<span style="color: #007700">public</span> <span style="color: #007700">StringBuilder</span> <span style="color: #007700">append</span><span style="color: #333333">(</span><span style="color: #007700">boolean</span> <span style="color: #007700">b</span><span style="color: #333333">)</span>
+	{
+		<span style="color: #008800; font-weight: bold">super</span><span style="color: #333333">.</span>append(b);
+		return this;
+	}
+
+	<span style="color: #007700">public</span> <span style="color: #007700">StringBuilder</span> <span style="color: #007700">append</span><span style="color: #333333">(</span><span style="color: #007700">char</span> <span style="color: #007700">c</span><span style="color: #333333">)</span>
+	{
+		<span style="color: #008800; font-weight: bold">super</span><span style="color: #333333">.</span>append(c);
+		return this;
+	}
+
+	<span style="color: #007700">public</span> <span style="color: #007700">StringBuilder</span> <span style="color: #007700">append</span><span style="color: #333333">(</span><span style="color: #007700">int</span> <span style="color: #007700">i</span><span style="color: #333333">)</span>
+	{
+		<span style="color: #008800; font-weight: bold">super</span><span style="color: #333333">.</span>append(i);
+		return this;
+	}
+
+	<span style="color: #007700">public</span> <span style="color: #007700">StringBuilder</span> <span style="color: #007700">append</span><span style="color: #333333">(</span><span style="color: #007700">long</span> <span style="color: #007700">lng</span><span style="color: #333333">)</span>
+	{
+		<span style="color: #008800; font-weight: bold">super</span><span style="color: #333333">.</span>append(lng);
+		return this;
+	}
+
+	<span style="color: #007700">public</span> <span style="color: #007700">StringBuilder</span> <span style="color: #007700">append</span><span style="color: #333333">(</span><span style="color: #007700">float</span> <span style="color: #007700">f</span><span style="color: #333333">)</span>
+	{
+		<span style="color: #008800; font-weight: bold">super</span><span style="color: #333333">.</span>append(f);
+		return this;
+	}
+</pre></div>
+
+</br>            
+<p>One more thing to note about StringBuffer and StringBuilder is that they inherit from a common Parent class, AbstractStringBuilder. This is an abstract class, which also implements Appendable and CharSequence interface. This was introduced in Java 1.5 to bring StringBuffer and StringBuilder into same type hierarchy. This class represents a mutable sequence of characters. At any point in time it contains some particular sequence of characters, but the length and content of the sequence can be changed through certain method calls e.g. append(). StringBuffer overrides almost every method to add synchronized keyword on it, but apparently doesn't use @Override annotation. I really found this amusing because annotation was also introduced on same release but they didn't they could have added those in StringBuffer class to make it more readable.
+</br>
+2) Another difference between StringBuffer and StringBuilder is that former is thread-safe and later is not. You can share instance of StringBuffer between multiple thread without any external synchronization, but its not safe to share instance of StringBuilder like that. If you ever need to use a mutable String between multiple thread, go for StringBuffer, for all local use, which is within inside one thread, use StringBuilder.
+</br>
+3) Third difference between StringBuilder and StringBuffer also stem from same fact, because StringBuffer is synchronized and thread-safe its bound to be slower than its non-synchronized, non-thread-safe counterpart StringBuilder, because of time taken to acquire and release lock while calling methods of StringBuffer.
+</br>
+In short, if you have good knowledge of Java programming language, you can actually deduce all three differences from just one fact that, StringBuffer is synchronized while StringBuilder is not. In fact, that will impress interviewer more, because apart from answering the question it also demonstrate your sound knowledge of Java programming language. Always take this kind of opportunities and demonstrate your talent and deep understanding of subject during interviews. It's a proven strategy to do well on interviews.
+
+</br>
+</br>
+In Summary, following are notable difference between StringBuffer and StringBuilder in Java
+      
+</p>
+
+<blockquote>
+ <p>
+    
+
+1) StringBuilder is non synchronized version of StringBuffer class. Methods in StringBuilder e.g. all overloaded version of append() method is not synchronized.
+</br>
+2) StringBuilder is definitely faster than StringBuffer because of no overhead of acquiring and releasing locks associated with synchronized methods.
+</br>
+3) StringBuffer is thread-safe and StringBuilder is not. You can not share Instances of StringBuilder class between multiple threads. If such synchronization is required then it is better to use StringBuffer class.
+</br>
+4) StringBuffer is old class, its there in JDK from very first release, while StringBuilder is relatively newer class, introduced much later in release of JDK 1.5
+</br>
+5) Another interesting fact to know about both of this class is that, when you do String concatenation using + operator, Java internally convert that call to corresponding StringBuilder append() method class. For example "one" + "two" + "three" will be converted to new StringBuilder().append("one").append("two").append("three"). Only problem is that it initialize StringBuilder with default capacity, which means expensive array copy operation, when StringBuilder get resized.
+</br>
+</p>
+</blockquote>
+
+  </article>
+
+</div>
+
+        <footer class="site-footer">
+  
+  <p class="trademark">Copyright &copy; 2015. All rights reserved.</p>
+
+</footer>
+
+      </div>
+    </div>
+
+  </body>
+
+</html>
