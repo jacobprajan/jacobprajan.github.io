@@ -76,8 +76,6 @@ UNUSED.site-header .hamburger-icon > div, .site-header .menu-icon > div { width:
 
 .highlight { background: #fff; }
 
-.mycss
-{
-font-weight:normal;color:#000000;letter-spacing:1pt;word-spacing:2pt;font-size:12px;text-align:left;font-family:arial, helvetica, sans-serif;line-height:1;
+.searchword {
+    background-color: yellow
 }
-
